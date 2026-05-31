@@ -1,0 +1,14 @@
+package prm.projectbase.repository;
+
+import prm.projectbase.entity.PersonalRecord;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface PersonalRecordRepository extends JpaRepository<PersonalRecord, Integer> {
+    List<PersonalRecord> findByUserId(Integer userId);
+    Optional<PersonalRecord> findByUserIdAndExerciseId(Integer userId, Integer exerciseId);
+}
