@@ -21,8 +21,8 @@ public class UserCreateRequest {
     @Size(min = 6, message = "INVALID_PASSWORD")
     String password;
 
-    @NotBlank(message = "EMAIL_EXISTED")
-    @Email(message = "EMAIL_EXISTED")
+    @NotBlank(message = "EMAIL_INVALID")
+    @Email(message = "EMAIL_INVALID")
     String email;
 
     String fullName;

@@ -34,3 +34,7 @@ build/
 
 *.log
 *.log.*
+
+# Secret environment files - NEVER commit these
+.env
+application-prod.properties

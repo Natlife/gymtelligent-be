@@ -2,6 +2,8 @@ package prm.projectbase.service;
 
 import prm.projectbase.entity.*;
 import prm.projectbase.repository.*;
+import prm.projectbase.dto.response.PersonalRecordResponse;
+import prm.projectbase.dto.response.WorkoutSessionResponse;
 import prm.projectbase.exception.AppException;
 import prm.projectbase.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,7 +36,7 @@ public class WorkoutService {
     CalorieCalculatorService calorieCalculatorService;
 
     @Transactional
-    public WorkoutSession startSession(Integer userId, Integer exerciseId) {
+    public WorkoutSessionResponse startSession(Integer userId, Integer exerciseId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
@@ -53,14 +56,19 @@ public class WorkoutService {
                 .build();
         session.setStatus(0); // 0 = Ongoing
 
-        return workoutSessionRepository.save(session);
+        return WorkoutSessionResponse.fromEntity(workoutSessionRepository.save(session));
     }
 
     @Transactional
-    public WorkoutSession completeSession(Integer sessionId, Integer totalReps, Integer totalSets,
+    public WorkoutSessionResponse completeSession(Integer sessionId, Integer requestingUserId, Integer totalReps, Integer totalSets,
                                           Integer durationSeconds, Double avgPostureScore, String aiFeedback, Double caloriesBurned) {
         WorkoutSession session = workoutSessionRepository.findById(sessionId)
                 .orElseThrow(() -> new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION)); // Session not found
+
+        // Ownership check: users may only complete their own sessions.
+        if (session.getUser().getId() != requestingUserId) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
 
         if (session.getStatus() == 1) {
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION); // Already completed
@@ -93,7 +101,7 @@ public class WorkoutService {
         WorkoutSession savedSession = workoutSessionRepository.save(session);
 
         // Pre-computed Stats Update
-        updateDailyStats(session.getUser(), session.getSessionDate(), caloriesBurned, durationSeconds, totalReps, avgPostureScore);
+        updateDailyStats(session.getUser(), session.getSessionDate(), finalCalories, durationSeconds, totalReps, avgPostureScore);
 
         // Streak calculation
         updateStreakAfterWorkout(session.getUser(), session.getSessionDate());
@@ -101,13 +109,14 @@ public class WorkoutService {
         // Personal record update
         updatePersonalRecord(session.getUser(), session.getExercise(), totalReps, durationSeconds);
 
-        return savedSession;
+        return WorkoutSessionResponse.fromEntity(savedSession);
     }
 
     @Transactional(readOnly = true)
-    public Page<WorkoutSession> getHistory(Integer userId, int page, int size) {
+    public Page<WorkoutSessionResponse> getHistory(Integer userId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("startedAt").descending());
-        return workoutSessionRepository.findByUserId(userId, pageable);
+        return workoutSessionRepository.findByUserId(userId, pageable)
+                .map(WorkoutSessionResponse::fromEntity);
     }
 
     @Transactional
@@ -190,5 +199,12 @@ public class WorkoutService {
             record.setAchievedAt(LocalDateTime.now());
             personalRecordRepository.save(record);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<PersonalRecordResponse> getPersonalRecords(Integer userId) {
+        return personalRecordRepository.findByUserId(userId).stream()
+                .map(PersonalRecordResponse::fromEntity)
+                .toList();
     }
 }

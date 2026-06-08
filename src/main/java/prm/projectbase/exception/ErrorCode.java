@@ -7,6 +7,7 @@ import lombok.Getter;
 public enum ErrorCode {
     UNCATEGORIZED_EXCEPTION(500, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_KEY(400, "Invalid configuration key", HttpStatus.BAD_REQUEST),
+    VALIDATION_FAILED(400, "Validation failed", HttpStatus.BAD_REQUEST),
     USER_EXISTED(400, "User already exists", HttpStatus.BAD_REQUEST),
     USERNAME_INVALID(400, "Username must be at least 3 characters", HttpStatus.BAD_REQUEST),
     INVALID_PASSWORD(400, "Password must be at least 6 characters", HttpStatus.BAD_REQUEST),
@@ -15,6 +16,7 @@ public enum ErrorCode {
     UNAUTHENTICATED(401, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(403, "You do not have permission", HttpStatus.FORBIDDEN),
     EMAIL_EXISTED(400, "Email already exists", HttpStatus.BAD_REQUEST),
+    EMAIL_INVALID(400, "Invalid email address", HttpStatus.BAD_REQUEST),
     INVALID_CREDENTIALS(402, "Invalid parameters", HttpStatus.UNPROCESSABLE_ENTITY),
     FILE_STORAGE_ERROR(500, "Could not store file", HttpStatus.INTERNAL_SERVER_ERROR),
     FILE_NOT_FOUND(404, "File not found", HttpStatus.NOT_FOUND),

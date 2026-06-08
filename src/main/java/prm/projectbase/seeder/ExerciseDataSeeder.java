@@ -21,17 +21,6 @@ public class ExerciseDataSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
         List<Exercise> targetExercises = List.of(
             Exercise.builder()
-                .name("Push Ups")
-                .category(ExerciseCategory.STRENGTH)
-                .difficultyLevel(FitnessLevel.BEGINNER)
-                .metValue(3.8)
-                .description("A fundamental upper body exercise that targets chest, shoulders, and triceps. Perfect for building pushing strength and core stability.")
-                .muscleGroups("chest,shoulders,triceps,core")
-                .instructions("[\"Start in a plank position with hands shoulder-width apart\",\"Lower your body until chest nearly touches the floor\",\"Keep your core tight and body in a straight line\",\"Push back up to starting position\",\"Repeat for desired reps\"]")
-                .defaultSets(3)
-                .defaultReps(15)
-                .build(),
-            Exercise.builder()
                 .name("Squats")
                 .category(ExerciseCategory.STRENGTH)
                 .difficultyLevel(FitnessLevel.BEGINNER)
@@ -92,6 +81,17 @@ public class ExerciseDataSeeder implements CommandLineRunner {
                 System.out.println("   REMOVED UNSUPPORTED EXERCISE: DEADLIFTS   ");
             } catch (Exception e) {
                 System.out.println("   COULD NOT DELETE DEADLIFTS DUE TO FOREIGN KEY, KEEPING IT DEACTIVATED   ");
+            }
+        }
+
+        // Clean up the unsupported "Push Ups" exercise if present
+        java.util.Optional<Exercise> pushupOpt = exerciseRepository.findByName("Push Ups");
+        if (pushupOpt.isPresent()) {
+            try {
+                exerciseRepository.delete(pushupOpt.get());
+                System.out.println("   REMOVED UNSUPPORTED EXERCISE: PUSH UPS   ");
+            } catch (Exception e) {
+                System.out.println("   COULD NOT DELETE PUSH UPS DUE TO FOREIGN KEY, KEEPING IT DEACTIVATED   ");
             }
         }
 

@@ -1,6 +1,7 @@
 package prm.projectbase.repository;
 
 import prm.projectbase.entity.PersonalRecord;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface PersonalRecordRepository extends JpaRepository<PersonalRecord, Integer> {
+    @EntityGraph(attributePaths = "exercise")
     List<PersonalRecord> findByUserId(Integer userId);
+
     Optional<PersonalRecord> findByUserIdAndExerciseId(Integer userId, Integer exerciseId);
 }

@@ -19,6 +19,7 @@ public class PersonalRecord extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

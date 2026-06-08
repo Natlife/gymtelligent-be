@@ -15,7 +15,7 @@ public class UserUpdateRequest {
     @Size(min = 6, message = "INVALID_PASSWORD")
     String password;
 
-    @Email(message = "EMAIL_EXISTED")
+    @Email(message = "EMAIL_INVALID")
     String email;
 
     String fullName;

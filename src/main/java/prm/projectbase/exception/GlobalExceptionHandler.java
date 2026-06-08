@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
             defaultErrorKey = firstFieldError.getDefaultMessage();
         }
 
-        ErrorCode errorCode = ErrorCode.INVALID_KEY;
+        ErrorCode errorCode = ErrorCode.VALIDATION_FAILED;
         try {
             errorCode = ErrorCode.valueOf(defaultErrorKey);
         } catch (IllegalArgumentException ignored) {

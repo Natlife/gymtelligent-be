@@ -17,6 +17,7 @@ public class User extends BaseEntity{
     String userName;
         
     @Column(nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     String password;
 
     @Column(unique = true, nullable = false)
